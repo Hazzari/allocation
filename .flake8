@@ -1,0 +1,13 @@
+[flake8]
+max-line-length = 120
+exclude = build/*, dist/*, .venv/*, .git/*, .eggs/*
+# ignore = E203  # E203 conflicts with PEP8; see https://github.com/psf/black#slices
+ignore = C101, D100, D101, D102, W503, C819, B008
+max-complexity = 10
+statistics = true
+doctests = True
+
+# Flake plugins:
+inline-quotes = single
+accept-encodings = utf-8
+docstring-convention = pep257
