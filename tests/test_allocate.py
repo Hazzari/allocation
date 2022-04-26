@@ -1,0 +1,49 @@
+from datetime import date, timedelta
+
+import pytest
+
+from app.model import Batch, OrderLine, OutOfStock, allocate
+
+today = date.today()
+tomorrow = today + timedelta(days=1)
+later = tomorrow + timedelta(days=10)
+
+
+def test_prefers_current_stock_batches_to_shipments():
+    in_stock_batch = Batch("in-stock-batch", "РЕТРО-ЧАСЫ", 100, eta=None)
+    shipment_batch = Batch("shipment-batch", "РЕТРО-ЧАСЫ", 100, eta=tomorrow)
+    line = OrderLine("order-002", "РЕТРО-ЧАСЫ", 10)
+
+    allocate(line, [in_stock_batch, shipment_batch])
+
+    assert in_stock_batch.available_quantity == 90
+    assert shipment_batch.available_quantity == 100
+
+
+def test_prefers_earlier_batches():
+    earliest = Batch("speedy-batch", "МАЛЕНЬКАЯ-ЛОЖКА", 100, eta=today)
+    medium = Batch("normal-batch", "МАЛЕНЬКАЯ-ЛОЖКА", 100, eta=tomorrow)
+    latest = Batch("slow-batch", "МАЛЕНЬКАЯ-ЛОЖКА", 100, eta=later)
+    line = OrderLine("order1", "МАЛЕНЬКАЯ-ЛОЖКА", 10)
+
+    allocate(line, [medium, earliest, latest])
+
+    assert earliest.available_quantity == 90
+    assert medium.available_quantity == 100
+    assert latest.available_quantity == 100
+
+
+def test_returns_allocated_batch_ref():
+    in_stock_batch = Batch("in-stock-batch-ref", "СТУЛ-ПРОСТОЙ", 100, eta=None)
+    shipment_batch = Batch("shipment-batch-ref", "СТУЛ-ПРОСТОЙ", 100, eta=tomorrow)
+    line = OrderLine("order-3", "СТУЛ-ПРОСТОЙ", 10)
+    allocation = allocate(line, [in_stock_batch, shipment_batch])
+    assert allocation == in_stock_batch.reference
+
+
+def test_raises_out_of_stock_exception_if_cannot_allocate():
+    batch = Batch("batch1", "МАЛЕНЬКАЯ-ВИЛКА", 10, eta=today)
+    allocate(OrderLine("order1", "МАЛЕНЬКАЯ-ВИЛКА", 10), [batch])
+
+    with pytest.raises(OutOfStock, match="МАЛЕНЬКАЯ-ВИЛКА"):
+        allocate(OrderLine("order2", "МАЛЕНЬКАЯ-ВИЛКА", 1), [batch])

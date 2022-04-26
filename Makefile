@@ -11,7 +11,8 @@ endif
 endif
 
 
-TEST_CMD=python -m pytest tests/* --cov=$(PROJECT_HOME)
+TEST_CMD=python -m pytest tests
+#/* --cov=$(PROJECT_HOME)
 CHECK_CMD=sh -c "pre-commit run isort -a && \
 			pre-commit run autopep8 -a && \
 			pre-commit run flake8 -a && \
