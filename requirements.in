@@ -1,5 +1,7 @@
 # prod dependencies
 pre-commit==2.18.1
+sqlalchemy==1.4.35
+alembic==1.7.7
 
 # dev dependencies
 pytest==7.1.2

@@ -4,6 +4,8 @@
 #
 #    pip-compile --no-emit-index-url --no-emit-trusted-host
 #
+alembic==1.7.7
+    # via -r requirements.in
 attrs==21.4.0
     # via pytest
 cfgv==3.3.1
@@ -14,10 +16,16 @@ distlib==0.3.4
     # via virtualenv
 filelock==3.6.0
     # via virtualenv
+greenlet==1.1.2
+    # via sqlalchemy
 identify==2.4.12
     # via pre-commit
 iniconfig==1.1.1
     # via pytest
+mako==1.2.0
+    # via alembic
+markupsafe==2.1.1
+    # via mako
 nodeenv==1.6.0
     # via pre-commit
 packaging==21.3
@@ -42,6 +50,10 @@ pyyaml==6.0
     # via pre-commit
 six==1.16.0
     # via virtualenv
+sqlalchemy==1.4.35
+    # via
+    #   -r requirements.in
+    #   alembic
 toml==0.10.2
     # via pre-commit
 tomli==2.0.1
