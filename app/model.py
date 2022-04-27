@@ -33,13 +33,12 @@ def allocate(line: 'OrderLine', batches: list['Batch']) -> str:
         raise OutOfStock(f"Нет в наличии: артикул - {line.sku}")
 
 
-@dataclass(frozen=True)
+@dataclass(unsafe_hash=True)
 class OrderLine:
     """Строка (позиция) заказа.
 
     Уникальное значение состоящее из id артикула и количества.
     """
-
     orderid: str
     sku: str
     qty: int

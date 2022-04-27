@@ -11,7 +11,7 @@ endif
 endif
 
 
-TEST_CMD=python -m pytest tests
+TEST_CMD=python -m pytest tests --tb=short -vv
 #/* --cov=$(PROJECT_HOME)
 CHECK_CMD=sh -c "pre-commit run isort -a && \
 			pre-commit run autopep8 -a && \
