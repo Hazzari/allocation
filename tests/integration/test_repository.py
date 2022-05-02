@@ -1,9 +1,10 @@
-from app import repository
-from app.model import Batch, OrderLine
+# pylint: disable=protected-access
+from adapters import repository
+from domain import model
 
 
 def test_repository_can_save_a_batch(session):
-    batch = Batch('batch1', 'ИЗЫСКАННАЯ-СКАМЕЙКА', 100, eta=None)
+    batch = model.Batch('batch1', 'ИЗЫСКАННАЯ-СКАМЕЙКА', 100, eta=None)
 
     repo = repository.SqlAlchemyRepository(session)
     repo.add(batch)
@@ -60,12 +61,12 @@ def test_repository_can_retrieve_a_batch_with_allocations(session):
     insert_allocation(session, orderline_id, batch1_id)
 
     repo = repository.SqlAlchemyRepository(session)
-    retrieved = repo.get("batch1")  # type:ignore
+    retrieved = repo.get("batch1")
 
-    expected = Batch("batch1", "БОЛЬШОЙ-ДИВАН", 100, eta=None)
+    expected = model.Batch("batch1", "БОЛЬШОЙ-ДИВАН", 100, eta=None)
     assert retrieved == expected  # Batch.__eq__ only compares reference
     assert retrieved.sku == expected.sku
     assert retrieved._purchased_quantity == expected._purchased_quantity
     assert retrieved._allocations == {
-        OrderLine("order1", "БОЛЬШОЙ-ДИВАН", 12),
+        model.OrderLine("order1", "БОЛЬШОЙ-ДИВАН", 12),
     }

@@ -14,17 +14,18 @@ available quantity - располагаемое количество товар�
 sku - Единица складского учета
 qty - количество
 """
+from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import date
+from typing import List
 
 
 class OutOfStock(Exception):
     pass
 
 
-def allocate(line: 'OrderLine', batches: list['Batch']) -> str:
-
+def allocate(line: OrderLine, batches: List[Batch]) -> str:
     try:
         batch = next(b for b in sorted(batches) if b.can_allocate(line))
         batch.allocate(line)

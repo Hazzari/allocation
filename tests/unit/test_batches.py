@@ -2,7 +2,7 @@ from datetime import date
 
 import pytest
 
-from app.model import Batch, OrderLine
+from domain.model import Batch, OrderLine
 
 
 @pytest.mark.parametrize(
