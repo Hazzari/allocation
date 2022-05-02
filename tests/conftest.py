@@ -10,7 +10,9 @@ from sqlalchemy.future import Engine
 from sqlalchemy.orm import clear_mappers, sessionmaker
 
 import config
+from adapters import repository
 from adapters.orm import metadata, start_mappers
+from domain.model import Batch
 
 
 @pytest.fixture()
@@ -68,3 +70,34 @@ def _restart_api() -> None:
     (Path(__file__).parent / "../entrypoints/flask_app.py").touch()
     time.sleep(0.5)
     wait_for_webapp_to_come_up()
+
+
+class FakeRepository(repository.AbstractRepository):
+    def __init__(self, batches) -> None:
+        self._batches = set(batches)
+
+    def add(self, batch) -> None:
+        self._batches.add(batch)
+
+    def get(self, reference) -> 'Batch':
+        return next(b for b in self._batches if b.reference == reference)
+
+    def list(self) -> list:
+        return list(self._batches)
+
+
+class FakeSession:
+    committed = False
+
+    def commit(self):
+        self.committed = True
+
+
+@pytest.fixture()
+def fake_repo():
+    return FakeRepository([])
+
+
+@pytest.fixture()
+def fake_session():
+    return FakeSession()

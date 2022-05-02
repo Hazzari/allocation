@@ -34,6 +34,10 @@ def allocate(line: OrderLine, batches: List[Batch]) -> str:
         raise OutOfStock(f"Нет в наличии: артикул - {line.sku}")
 
 
+def deallocate(line: OrderLine, batch: Batch) -> None:
+    batch.deallocate(line)
+
+
 @dataclass(unsafe_hash=True)
 class OrderLine:
     """Строка (позиция) заказа.
