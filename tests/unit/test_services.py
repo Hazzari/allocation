@@ -16,10 +16,10 @@ def test_allocate_returns_allocation(fake_repo, fake_session):
 
 
 def test_allocate_errors_for_invalid_sku(fake_repo, fake_session):
-    services.add_batch("b1", "НЕДОПУСТИМЫЙ-", 100, None, fake_repo, fake_session)
+    services.add_batch("b1", "НЕДОПУСТИМЫЙ-SKU", 100, None, fake_repo, fake_session)
 
     with pytest.raises(services.InvalidSku, match="Invalid sku НЕСУЩЕСТВУЮЩИЙ"):
-        services.allocate("o1", "НЕСУЩЕСТВУЮЩИЙ", 10, fake_repo, fake_session)
+        services.allocate("o1", "НЕСУЩЕСТВУЮЩИЙ-SKU", 10, fake_repo, fake_session)
 
 
 def test_commits(fake_repo, fake_session):
@@ -54,16 +54,16 @@ def test_deallocate_decrements_correct_quantity(fake_repo, fake_session):
 
 
 @pytest.mark.parametrize(
-    'unallocated_line',
+    'unallocated_order',
     [
         ({'orderid': "line1", 'sku': "ВИНТАЖНАЯ-СОФА", 'qty': 30}),
         ({'orderid': "line2", 'sku': "БЕЛАЯ-ПОЛКА", 'qty': 40}),
         ({'orderid': "line3", 'sku': "ПУШИСТЫЙ-ПУФИК", 'qty': 90}),
     ]
 )
-def test_trying_to_deallocate_unallocated_batch(fake_repo, fake_session, unallocated_line):
+def test_trying_to_deallocate_unallocated_batch(fake_repo, fake_session, unallocated_order):
     batch_id = "batch001"
-    orderid, sku, qty = unallocated_line.values()
+    orderid, sku, qty = unallocated_order.values()
     services.add_batch(batch_id, "КРАСНЫЙ-КОВЕР", 100, None, fake_repo, fake_session)
     batch = fake_repo.get(reference=batch_id)
     assert batch.available_quantity == 100

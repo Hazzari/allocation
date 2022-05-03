@@ -9,9 +9,9 @@ from sqlalchemy.exc import OperationalError
 from sqlalchemy.future import Engine
 from sqlalchemy.orm import clear_mappers, sessionmaker
 
-import config
 from adapters import repository
 from adapters.orm import metadata, start_mappers
+from config import get_config
 from domain.model import Batch
 
 
@@ -41,7 +41,7 @@ def wait_for_postgres_to_come_up(engine) -> Engine:
 
 def wait_for_webapp_to_come_up() -> httpx.Response:
     deadline = time.time() + 10
-    url = config.get_api_url()
+    url = get_config().api_url
     while time.time() < deadline:
         try:
             return httpx.get(url)
@@ -52,7 +52,7 @@ def wait_for_webapp_to_come_up() -> httpx.Response:
 
 @pytest.fixture(scope="session")
 def postgres_db():
-    engine = create_engine(config.get_postgres_uri())
+    engine = create_engine(get_config().postgres_uri)
     wait_for_postgres_to_come_up(engine)
     metadata.create_all(engine)
     return engine

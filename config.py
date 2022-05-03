@@ -1,17 +1,16 @@
-import os
+from functools import lru_cache
+
+from pydantic import BaseSettings
 
 
-def get_postgres_uri() -> str:
-    host = os.environ.get("DB_HOST", "127.0.0.1")
-    port = 54321 if host == "127.0.0.1" else 5432
-    password = os.environ.get("DB_PASSWORD", "abc1234")
-    user, db_name = "allocation", "allocation"
-    return f"postgresql://{user}:{password}@{host}:{port}/{db_name}"
+class Config(BaseSettings):
+    postgres_uri: str
+    api_url: str = 'http://127.0.0.1:5005'
+
+    class Config:
+        env_file = 'config/.env'
 
 
-def get_api_url() -> str:
-    host = os.environ.get("API_HOST", "127.0.0.1")
-    # port = 5005 if host == "localhost" else 80
-    port = 5005 if host == "127.0.0.1" else 80
-    # port = 5000 if host == "localhost" else 80
-    return f"http://{host}:{port}"
+@lru_cache
+def get_config() -> Config:
+    return Config()
