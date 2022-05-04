@@ -1,7 +1,7 @@
 import abc
 
-from domain import model
-from domain.model import Batch
+from src.allocation.domain import model
+from src.allocation.domain.model import Batch
 
 
 class AbstractRepository(abc.ABC):
@@ -25,7 +25,7 @@ class SqlAlchemyRepository(AbstractRepository):
     def add(self, batch) -> None:
         self.session.add(batch)
 
-    def get(self, reference) -> 'Batch':
+    def get(self, reference: str) -> 'Batch':
         return self.session.query(model.Batch).filter_by(reference=reference).one()
 
     def list(self) -> list['Batch']:

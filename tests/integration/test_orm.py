@@ -1,6 +1,6 @@
 from datetime import date
 
-from domain import model
+from src.allocation.domain import model
 
 
 def test_orderline_mapper_can_load_lines(session):
@@ -61,7 +61,7 @@ def test_saving_allocations(session):
     session.add(batch)
     session.commit()
     rows = list(session.execute('SELECT orderline_id, batch_id FROM "allocations"'))
-    assert rows == [(batch.id, line.id)]  # type: ignore
+    assert rows == [(batch.id, line.id)]
 
 
 def test_retrieving_allocations(session):

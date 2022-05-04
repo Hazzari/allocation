@@ -1,1 +1,28 @@
-re
+---
+version: "3.7"
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    environment:
+      - DB_HOST=postgres
+      - DB_PASSWORD=abc1234
+      - API_HOST=app
+      - PYTHONDONTWRITEBYTECODE=1
+    volumes:
+      - ./src:/src
+      - ./tests:/tests
+    ports:
+      - "5005:80"
+
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=allocation
+      - POSTGRES_PASSWORD=abc1234
+    ports:
+      - "54321:5432"

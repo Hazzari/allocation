@@ -1,22 +1,16 @@
 # pylint: disable=protected-access
-from adapters import repository
-from domain import model
+from src.allocation.adapters import repository
+from src.allocation.domain import model
 
 
 def test_repository_can_save_a_batch(session):
     batch = model.Batch('batch1', 'ИЗЫСКАННАЯ-СКАМЕЙКА', 100, eta=None)
-
     repo = repository.SqlAlchemyRepository(session)
     repo.add(batch)
-
     session.commit()
 
-    rows = list(
-        session.execute(
-            'SELECT reference, sku, _purchased_quantity, eta FROM "batches"'
-        )
-    )
-    assert rows == [('batch1', 'ИЗЫСКАННАЯ-СКАМЕЙКА', 100, None)]
+    rows = session.execute('SELECT reference, sku, _purchased_quantity, eta FROM "batches"')
+    assert list(rows) == [('batch1', 'ИЗЫСКАННАЯ-СКАМЕЙКА', 100, None)]
 
 
 def insert_order_line(session) -> dict:

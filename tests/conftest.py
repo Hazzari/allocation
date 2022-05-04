@@ -1,35 +1,44 @@
 # pylint: disable=redefined-outer-name
 import time
 from pathlib import Path
+from typing import Optional
 
 import httpx
 import pytest
+from httpx import Response
 from sqlalchemy import create_engine
+from sqlalchemy.engine import Connection
 from sqlalchemy.exc import OperationalError
-from sqlalchemy.future import Engine
 from sqlalchemy.orm import clear_mappers, sessionmaker
 
-from adapters import repository
-from adapters.orm import metadata, start_mappers
-from config import get_config
-from domain.model import Batch
+from src.allocation.adapters.orm import (
+    mapper_registry,
+    metadata,
+    start_mappers,
+)
+from src.allocation.config import get_config
 
 
 @pytest.fixture()
 def in_memory_db():
     engine = create_engine("sqlite:///:memory:")
-    metadata.create_all(engine)
+    mapper_registry.metadata.create_all(engine)
     return engine
 
 
 @pytest.fixture()
-def session(in_memory_db):
+def session_factory(in_memory_db):
     start_mappers()
-    yield sessionmaker(bind=in_memory_db)()
+    yield sessionmaker(bind=in_memory_db)
     clear_mappers()
 
 
-def wait_for_postgres_to_come_up(engine) -> Engine:
+@pytest.fixture()
+def session(session_factory):
+    return session_factory()
+
+
+def wait_for_postgres_to_come_up(engine) -> Connection | None:  # type: ignore
     deadline = time.time() + 10
     while time.time() < deadline:
         try:
@@ -39,13 +48,14 @@ def wait_for_postgres_to_come_up(engine) -> Engine:
     pytest.fail("Postgres never came up")
 
 
-def wait_for_webapp_to_come_up() -> httpx.Response:
+def wait_for_webapp_to_come_up() -> Optional[Response]:  # type: ignore
     deadline = time.time() + 10
     url = get_config().api_url
+
     while time.time() < deadline:
         try:
             return httpx.get(url)
-        except httpx.ConnectError:
+        except ConnectionError:
             time.sleep(0.5)
     pytest.fail("API never came up")
 
@@ -66,38 +76,7 @@ def postgres_session(postgres_db):
 
 
 @pytest.fixture()
-def _restart_api() -> None:
-    (Path(__file__).parent / "../entrypoints/flask_app.py").touch()
+def _restart_api():
+    (Path(__file__).parent / "../src/allocation/entrypoints/flask_app.py").touch()
     time.sleep(0.5)
     wait_for_webapp_to_come_up()
-
-
-class FakeRepository(repository.AbstractRepository):
-    def __init__(self, batches) -> None:
-        self._batches = set(batches)
-
-    def add(self, batch) -> None:
-        self._batches.add(batch)
-
-    def get(self, reference) -> 'Batch':
-        return next(b for b in self._batches if b.reference == reference)
-
-    def list(self) -> list:
-        return list(self._batches)
-
-
-class FakeSession:
-    committed = False
-
-    def commit(self):
-        self.committed = True
-
-
-@pytest.fixture()
-def fake_repo():
-    return FakeRepository([])
-
-
-@pytest.fixture()
-def fake_session():
-    return FakeSession()

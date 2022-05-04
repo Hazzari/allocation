@@ -3,7 +3,7 @@ import uuid
 import httpx as req
 import pytest
 
-from config import get_config
+from src.allocation.config import get_config
 
 
 def random_suffix() -> str:
