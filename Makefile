@@ -11,9 +11,8 @@ endif
 endif
 
 
-TEST_CMD_NOT_API=python -m pytest tests --tb=short -vv -m 'not api'
-TEST_CMD_API=python -m pytest tests --tb=short -vv  -m 'api'
-#/* --cov=$(PROJECT_HOME)
+TEST_CMD_NOT_API=python -m pytest tests --tb=short -vv -m 'not api' --numprocesses 4
+TEST_CMD_API=python -m pytest tests --tb=short -vv  -m 'api' --numprocesses 4
 CHECK_CMD=sh -c "pre-commit run isort -a && \
 			pre-commit run autopep8 -a && \
 			pre-commit run flake8 -a && \
@@ -46,9 +45,6 @@ integration-tests: up
 e2e-tests: up
 	docker-compose run --rm --no-deps --entrypoint=pytest app /tests/e2e
 
-
-
-
 run:
 	$(RUN_CMD)
 
@@ -76,7 +72,6 @@ clean: pip_upgrade
 	pip uninstall -y -r <(pip freeze)
 	rm requirements.txt
 
-
 all: down build up test
 
 build:
@@ -87,7 +82,6 @@ up:
 
 down:
 	docker-compose down --remove-orphans
-
 
 logs:
 	docker-compose logs app | tail -100

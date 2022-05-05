@@ -28,6 +28,8 @@ dnspython==2.2.1
     # via email-validator
 email-validator==1.2.1
     # via pydantic
+execnet==1.9.0
+    # via pytest-xdist
 filelock==3.6.0
     # via virtualenv
 flask==2.1.2
@@ -72,7 +74,9 @@ pre-commit==2.18.1
 psycopg2-binary==2.9.3
     # via -r requirements.in
 py==1.11.0
-    # via pytest
+    # via
+    #   pytest
+    #   pytest-forked
 pydantic[dotenv,email]==1.9.0
     # via -r requirements.in
 pyparsing==3.0.8
@@ -81,7 +85,13 @@ pytest==7.1.2
     # via
     #   -r requirements.in
     #   pytest-cov
+    #   pytest-forked
+    #   pytest-xdist
 pytest-cov==3.0.0
+    # via -r requirements.in
+pytest-forked==1.4.0
+    # via pytest-xdist
+pytest-xdist==2.5.0
     # via -r requirements.in
 python-dotenv==0.20.0
     # via pydantic
