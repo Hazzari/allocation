@@ -25,7 +25,7 @@ def add_batch():
         request.json["sku"],
         request.json["qty"],
         eta,
-        uow=unit_of_work.AbstractUnitOfWork()
+        uow=unit_of_work.SqlAlchemyUnitOfWork()
     )
     return "OK", 201
 

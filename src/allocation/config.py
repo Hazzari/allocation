@@ -4,12 +4,11 @@ from pydantic import BaseSettings
 
 
 class Config(BaseSettings):
-    postgres_uri: str = 'postgresql+psycopg2://allocation:abc1234@127.0.0.1:5432/allocation'
-    api_url: str = 'http://127.0.0.1:5005'
+    postgres_uri: str
+    api_url: str
 
     class Config:
-        env_file = '../../config/.env'
-        # orm_mode = True
+        env_file = 'config/.env'
 
 
 @lru_cache
