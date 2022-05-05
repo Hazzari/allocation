@@ -5,7 +5,7 @@ from typing import Optional
 
 import httpx
 import pytest
-from httpx import Response
+from httpx import ConnectError, Response
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Connection
 from sqlalchemy.exc import OperationalError
@@ -80,3 +80,12 @@ def _restart_api():
     (Path(__file__).parent / "../src/allocation/entrypoints/flask_app.py").touch()
     time.sleep(0.5)
     wait_for_webapp_to_come_up()
+
+
+@pytest.fixture()
+def health():
+    try:
+        httpx.get('http://127.0.0.1:5000/allocate')
+        return True
+    except ConnectError:
+        return False
