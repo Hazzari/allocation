@@ -22,6 +22,9 @@ CHECK_CMD=sh -c "pre-commit run isort -a && \
 			pre-commit run bandit && \
 			pre-commit run yamllint -a"
 
+run:
+	export FLASK_DEBUG=$(FLASK_DEBUG)
+	FLASK_APP=src.allocation.entrypoints.flask_app:app flask run
 
 af:
 	isort $(PROJECT_HOME)
@@ -45,8 +48,6 @@ integration-tests: up
 e2e-tests: up
 	docker-compose run --rm --no-deps --entrypoint=pytest app /tests/e2e
 
-run:
-	$(RUN_CMD)
 
 pip_upgrade:
 	pip install --upgrade pip setuptools pip-tools

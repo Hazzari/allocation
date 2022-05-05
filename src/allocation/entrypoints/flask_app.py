@@ -43,3 +43,8 @@ def allocate_endpoint() -> tuple:
         return {"message": str(e)}, 400
 
     return {"batchref": batchref}, 201
+
+
+@app.route("/healthcheck", methods=["GET"])
+def add_healthcheck():
+    return 'Services is run', 200
