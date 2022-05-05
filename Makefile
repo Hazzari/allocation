@@ -11,7 +11,8 @@ endif
 endif
 
 
-TEST_CMD=python -m pytest tests --tb=short -vv
+TEST_CMD_NOT_API=python -m pytest tests --tb=short -vv -m 'not api'
+TEST_CMD_API=python -m pytest tests --tb=short -vv  -m 'api'
 #/* --cov=$(PROJECT_HOME)
 CHECK_CMD=sh -c "pre-commit run isort -a && \
 			pre-commit run autopep8 -a && \
@@ -31,10 +32,22 @@ check:
 	$(CHECK_CMD)
 
 test:
-	$(TEST_CMD)
+	$(TEST_CMD_NOT_API)
 
-t:
-	$(TEST_DEBUG_CMD)
+test_api:
+	$(TEST_CMD_API)
+
+unit-tests:
+	docker-compose run --rm --no-deps --entrypoint=pytest app /tests/unit
+
+integration-tests: up
+	docker-compose run --rm --no-deps --entrypoint=pytest app /tests/integration
+
+e2e-tests: up
+	docker-compose run --rm --no-deps --entrypoint=pytest app /tests/e2e
+
+
+
 
 run:
 	$(RUN_CMD)
@@ -75,17 +88,6 @@ up:
 down:
 	docker-compose down --remove-orphans
 
-test1: up
-	docker-compose run --rm --no-deps --entrypoint=pytest app /tests/unit /tests/integration /tests/e2e
-
-unit-tests:
-	docker-compose run --rm --no-deps --entrypoint=pytest app /tests/unit
-
-integration-tests: up
-	docker-compose run --rm --no-deps --entrypoint=pytest app /tests/integration
-
-e2e-tests: up
-	docker-compose run --rm --no-deps --entrypoint=pytest app /tests/e2e
 
 logs:
 	docker-compose logs app | tail -100
