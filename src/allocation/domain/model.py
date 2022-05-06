@@ -40,7 +40,7 @@ def deallocate(line: OrderLine, batch: Batch) -> None:
 
 @dataclass(unsafe_hash=True)
 class OrderLine:
-    """Строка (позиция) заказа.
+    """Объект позиции заказа.
 
     Уникальное значение состоящее из id артикула и количества.
     """

@@ -13,16 +13,19 @@ class InvalidSku(Exception):
 
 
 def is_valid_sku(sku, batches) -> bool:
+    """Проверка валидности единицы складского учета."""
     return sku in {b.sku for b in batches}
 
 
 def add_batch(ref: str, sku: str, qty: int, eta: Optional[date], uow: AbstractUnitOfWork):
+    """Создание партии определенного товара."""
     with uow:
         uow.batches.add(model.Batch(ref, sku, qty, eta))
         uow.commit()
 
 
 def allocate(orderid: str, sku: str, qty: int, uow: AbstractUnitOfWork) -> str:
+    """Размещение в партии товара определенной позиции."""
     line = OrderLine(orderid, sku, qty)
     with uow:
         batches = uow.batches.list()
@@ -34,7 +37,7 @@ def allocate(orderid: str, sku: str, qty: int, uow: AbstractUnitOfWork) -> str:
 
 
 def deallocate(reference, orderid: str, sku: str, qty: int, uow: AbstractUnitOfWork):
-
+    """Удаление из партии товара определенной позиции."""
     line = OrderLine(orderid, sku, qty)
     batch = uow.batches.get(reference)
     with uow:
