@@ -9,6 +9,8 @@ from sqlalchemy.orm import sessionmaker
 from src.allocation.adapters import repository
 from src.allocation.config import get_config
 
+DEFAULT_SESSION_FACTORY = sessionmaker(bind=create_engine(get_config().postgres_uri))
+
 
 class AbstractUnitOfWork(abc.ABC):
     batches: repository.AbstractRepository
@@ -26,13 +28,6 @@ class AbstractUnitOfWork(abc.ABC):
     @abc.abstractmethod
     def rollback(self) -> None:
         raise NotImplementedError
-
-
-DEFAULT_SESSION_FACTORY = sessionmaker(
-    bind=create_engine(
-        get_config().postgres_uri,
-    )
-)
 
 
 class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
