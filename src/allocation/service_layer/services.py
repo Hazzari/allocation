@@ -39,7 +39,7 @@ def allocate(orderid: str, sku: str, qty: int, uow: AbstractUnitOfWork) -> str:
 def deallocate(reference, orderid: str, sku: str, qty: int, uow: AbstractUnitOfWork):
     """Удаление из партии товара определенной позиции."""
     line = OrderLine(orderid, sku, qty)
-    batch = uow.batches.get(reference)
     with uow:
+        batch = uow.batches.get(reference)
         model.deallocate(line, batch)
         uow.commit()
